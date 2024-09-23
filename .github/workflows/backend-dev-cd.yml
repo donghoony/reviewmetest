@@ -64,6 +64,7 @@ jobs:
         with:
           repository: ${{ secrets.PRIVATE_REPOSITORY_URL }}
           token: ${{ secrets.PRIVATE_REPOSITORY_TOKEN }}
+          ref: develop
 
       - name: Move appliation-related files to local
         run: |
