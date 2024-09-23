@@ -11,7 +11,7 @@ on:
 env:
   ARTIFACT_NAME: review-me-dev
   ARTIFACT_DIRECTORY: ./backend/build/libs
-  APPLICATION_DIRECTORY: ~/review-me-app
+  APPLICATION_DIRECTORY: /home/ubuntu/review-me-app
 
 jobs:
   build:
@@ -41,7 +41,7 @@ jobs:
           
       - name: Build dockerfile
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_ID }}/review-me-app:latest .
+          docker buildx build --platform linux/amd64,linux/arm64 -t ${{ secrets.DOCKERHUB_ID }}/review-me-app:latest .
           
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -68,9 +68,8 @@ jobs:
 
       - name: Move appliation-related files to local
         run: |
-          pwd
-          ls -al
-          mv ./app/* ${{ env.APPLICATION_DIRECTORY }}/app
+          mkdir -p ${{ env.APPLICATION_DIRECTORY }}/app
+          mv ./app/* ./app/.* ${{ env.APPLICATION_DIRECTORY }}/app
           
       - name: Login to DockerHub
         uses: docker/login-action@v3
@@ -80,7 +79,7 @@ jobs:
           
       - name: Pull from DockerHub
         run: |
-          sudo docker-compose down
+          sudo docker-compose down || true
           sudo docker pull ${{ secrets.DOCKERHUB_ID }}/review-me-app
-          sudo docker-compose up -d
-
+          sudo docker-compose --env-file .env.dev up -d
+        working-directory: ${{ env.APPLICATION_DIRECTORY }}/app
