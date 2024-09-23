@@ -1,0 +1,45 @@
+name: "TEST DOCKER PULL"
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'backend/**'
+
+env:
+  ARTIFACT_NAME: review-me-dev
+  ARTIFACT_DIRECTORY: ./backend/build/libs
+  APPLICATION_DIRECTORY: ~/review-me-app
+
+jobs:
+  deploy:
+    name: Deploy via self-hosted runner
+    runs-on: [self-hosted, dev]
+
+    steps:
+      - name: Checkout to secret repository
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.PRIVATE_REPOSITORY_URL }}
+          token: ${{ secrets.PRIVATE_REPOSITORY_TOKEN }}
+          ref: develop
+
+      - name: Move appliation-related files to local
+        run: |
+          pwd
+          ls -al
+          mv ./app/* ${{ env.APPLICATION_DIRECTORY }}/app
+          
+      - name: Login to DockerHub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_ID }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          
+      - name: Pull from DockerHub
+        run: |
+          sudo docker-compose down
+          sudo docker pull ${{ secrets.DOCKERHUB_ID }}/review-me-app
+          sudo docker-compose up -d
