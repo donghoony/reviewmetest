@@ -28,8 +28,8 @@ jobs:
 
       - name: Move appliation-related files to local
         run: |
-          mkdir -p ${{ env.APPLICATION_DIRECTORY }}/app
-          mv ./app/* ${{ env.APPLICATION_DIRECTORY }}/app
+          sudo mkdir -p ${{ env.APPLICATION_DIRECTORY }}/app
+          sudo mv ./app/* ${{ env.APPLICATION_DIRECTORY }}/app
           
       - name: Login to DockerHub
         uses: docker/login-action@v3
