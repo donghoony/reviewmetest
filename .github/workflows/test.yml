@@ -39,6 +39,6 @@ jobs:
           
       - name: Pull from DockerHub
         run: |
-          sudo docker-compose down
+          sudo docker-compose down || true
           sudo docker pull ${{ secrets.DOCKERHUB_ID }}/review-me-app
           sudo docker-compose up -d
