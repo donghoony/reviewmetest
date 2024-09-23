@@ -67,7 +67,9 @@ jobs:
 
       - name: Move appliation-related files to local
         run: |
-          mv app/* ${{ env.APPLICATION_DIRECTORY }}/app
+          pwd
+          ls -al
+          mv ./app/* ${{ env.APPLICATION_DIRECTORY }}/app
           
       - name: Login to DockerHub
         uses: docker/login-action@v3
